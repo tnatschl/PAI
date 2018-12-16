@@ -1,0 +1,991 @@
+[
+    {
+        "id": "248157e0.dfc2c8",
+        "type": "tab",
+        "label": "Motion Training/Testing",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "ea56be4a.28637",
+        "type": "ui_text",
+        "z": "248157e0.dfc2c8",
+        "group": "ec8e4586.a97fa8",
+        "order": 8,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Recoded elements:",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 210,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "1ed309a7.002126",
+        "type": "comment",
+        "z": "248157e0.dfc2c8",
+        "name": "Motion Training - Demo Flow",
+        "info": "",
+        "x": 140,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "a5029714.860368",
+        "type": "rpi-sensehat in",
+        "z": "248157e0.dfc2c8",
+        "name": "Motions",
+        "motion": true,
+        "env": false,
+        "stick": false,
+        "x": 90,
+        "y": 680,
+        "wires": [
+            [
+                "9b8b01de.1395d"
+            ]
+        ]
+    },
+    {
+        "id": "1ff77b44.859145",
+        "type": "function",
+        "z": "248157e0.dfc2c8",
+        "name": "Store Motions",
+        "func": "// Get Motion Array\nvar motions = flow.get('motions') || [];\nvar acceleration = flow.get('acceleration') || [];\nvar qyroscope = flow.get('qyroscope') || [];\nvar orientation = flow.get('orientation') || [];\nvar compass = flow.get('compass') || [];\nvar timestamp = flow.get('timestamp' || []);\nvar figure = flow.get('figure');\nvar userid = flow.get('userid');\nvar motionset = flow.get('motionset');\nvar dat = new Date();\n\n// Enhance Metadata\nmsg.payload.device = \"tjbot-02\";\nmsg.payload.userid = userid;\nmsg.payload.figure = figure;\nmsg.payload.motionset = motionset;\nmsg.payload.timestamp = Math.floor(dat);\nmsg.payload.date = dat.toJSON();\n\n// Push and store values\nmotions.push(msg.payload);\nacceleration.push(msg.payload.acceleration);\nqyroscope.push(msg.payload.qyroscope);\norientation.push(msg.payload.orientation);\ncompass.push(msg.payload.compass);\ntimestamp.push(msg.payload.timestamp);\n\n// Store Environment\nflow.set('motions',motions);\nflow.set('acceleration', acceleration);\nflow.set('qyroscope', qyroscope);\nflow.set('orientation', orientation);\nflow.set('compass',compass);\nflow.set('timestamp',timestamp);\nflow.set('recorded', true);\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 440,
+        "y": 600,
+        "wires": [
+            [
+                "ea1269b3.bc1968"
+            ]
+        ]
+    },
+    {
+        "id": "76484011.8f22b",
+        "type": "debug",
+        "z": "248157e0.dfc2c8",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 830,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "d8e20703.acd168",
+        "type": "ui_button",
+        "z": "248157e0.dfc2c8",
+        "name": "Start",
+        "group": "ec8e4586.a97fa8",
+        "order": 5,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "label": "Start Monitoring",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "true",
+        "payloadType": "bool",
+        "topic": "",
+        "x": 430,
+        "y": 400,
+        "wires": [
+            [
+                "ee843062.c4f03",
+                "9a33fd96.06b61"
+            ]
+        ]
+    },
+    {
+        "id": "69d44dd3.10b634",
+        "type": "ui_button",
+        "z": "248157e0.dfc2c8",
+        "name": "Stop",
+        "group": "ec8e4586.a97fa8",
+        "order": 6,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "label": "Stop Monitoring",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "false",
+        "payloadType": "bool",
+        "topic": "",
+        "x": 430,
+        "y": 340,
+        "wires": [
+            [
+                "ee843062.c4f03"
+            ]
+        ]
+    },
+    {
+        "id": "5515b38a.55ed6c",
+        "type": "ui_text",
+        "z": "248157e0.dfc2c8",
+        "group": "ec8e4586.a97fa8",
+        "order": 7,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Motion Detection",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 1010,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "87eed4bf.24a278",
+        "type": "template",
+        "z": "248157e0.dfc2c8",
+        "name": "Set Message",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "Is running: {{payload}} !",
+        "output": "str",
+        "x": 810,
+        "y": 400,
+        "wires": [
+            [
+                "5515b38a.55ed6c"
+            ]
+        ]
+    },
+    {
+        "id": "ee843062.c4f03",
+        "type": "change",
+        "z": "248157e0.dfc2c8",
+        "name": "Set Motion",
+        "rules": [
+            {
+                "t": "set",
+                "p": "store",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 590,
+        "y": 340,
+        "wires": [
+            [
+                "87eed4bf.24a278",
+                "d38d7911.e8c0e8"
+            ]
+        ]
+    },
+    {
+        "id": "9b8b01de.1395d",
+        "type": "switch",
+        "z": "248157e0.dfc2c8",
+        "name": "Store ?",
+        "property": "store",
+        "propertyType": "flow",
+        "rules": [
+            {
+                "t": "true"
+            },
+            {
+                "t": "false"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 240,
+        "y": 680,
+        "wires": [
+            [
+                "1ff77b44.859145"
+            ],
+            [
+                "6566e184.d3ca6"
+            ]
+        ]
+    },
+    {
+        "id": "6566e184.d3ca6",
+        "type": "switch",
+        "z": "248157e0.dfc2c8",
+        "name": "Recorded ?",
+        "property": "recorded",
+        "propertyType": "flow",
+        "rules": [
+            {
+                "t": "true"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 430,
+        "y": 760,
+        "wires": [
+            [
+                "c9ddec01.dead1"
+            ]
+        ]
+    },
+    {
+        "id": "c9ddec01.dead1",
+        "type": "change",
+        "z": "248157e0.dfc2c8",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "recorded",
+                "pt": "flow",
+                "to": "false",
+                "tot": "bool"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "motions",
+                "tot": "flow"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 620,
+        "y": 760,
+        "wires": [
+            [
+                "76484011.8f22b",
+                "d66bc77e.4a1048",
+                "ebea61b.9b725a"
+            ]
+        ]
+    },
+    {
+        "id": "175be1df.cc6eae",
+        "type": "file",
+        "z": "248157e0.dfc2c8",
+        "name": "Motions FileWrite",
+        "filename": "",
+        "appendNewline": false,
+        "createDir": false,
+        "overwriteFile": "true",
+        "x": 390,
+        "y": 1040,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "9a33fd96.06b61",
+        "type": "change",
+        "z": "248157e0.dfc2c8",
+        "name": "None",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "0",
+                "tot": "num"
+            },
+            {
+                "t": "set",
+                "p": "recorded",
+                "pt": "flow",
+                "to": "false",
+                "tot": "bool"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 570,
+        "y": 440,
+        "wires": [
+            [
+                "563b0532.32479c"
+            ]
+        ]
+    },
+    {
+        "id": "2f2c84dc.2c332c",
+        "type": "link in",
+        "z": "248157e0.dfc2c8",
+        "name": "Store ",
+        "links": [
+            "d66bc77e.4a1048"
+        ],
+        "x": 75,
+        "y": 920,
+        "wires": [
+            [
+                "b618007f.6d355"
+            ]
+        ]
+    },
+    {
+        "id": "d66bc77e.4a1048",
+        "type": "link out",
+        "z": "248157e0.dfc2c8",
+        "name": "Jump Detect",
+        "links": [
+            "2f2c84dc.2c332c"
+        ],
+        "x": 795,
+        "y": 760,
+        "wires": []
+    },
+    {
+        "id": "f7b29c5d.ab644",
+        "type": "function",
+        "z": "248157e0.dfc2c8",
+        "name": "Store File",
+        "func": "var motionset = flow.get('motionset');  // the current datetime as a Date object\nvar iso = motionset.toISOString();  // converted to YYYY-MM-DDThh:mm:ss.dddZ format\nvar utc = iso.replace(/^(.*)T(.*)Z$/, \"$1 $2\");  // with the 'T' and 'Z' removed\nvar figure = flow.get('figure');\n\nmsg.filename = 'Motions ' + figure + ' ' + utc + '.json';\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 180,
+        "y": 1040,
+        "wires": [
+            [
+                "175be1df.cc6eae"
+            ]
+        ]
+    },
+    {
+        "id": "2b61bfd9.33c3c",
+        "type": "ui_dropdown",
+        "z": "248157e0.dfc2c8",
+        "name": "",
+        "label": "Figure",
+        "place": "Select option",
+        "group": "ec8e4586.a97fa8",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "options": [
+            {
+                "label": "0",
+                "value": "0",
+                "type": "str"
+            },
+            {
+                "label": "1",
+                "value": "1",
+                "type": "str"
+            },
+            {
+                "label": "2",
+                "value": "2",
+                "type": "str"
+            },
+            {
+                "label": "3",
+                "value": "3",
+                "type": "str"
+            },
+            {
+                "label": "4",
+                "value": "4",
+                "type": "str"
+            },
+            {
+                "label": "5",
+                "value": "5",
+                "type": "str"
+            },
+            {
+                "label": "6",
+                "value": "6",
+                "type": "str"
+            },
+            {
+                "label": "7",
+                "value": "7",
+                "type": "str"
+            },
+            {
+                "label": "8",
+                "value": "8",
+                "type": "str"
+            },
+            {
+                "label": "9",
+                "value": "9",
+                "type": "str"
+            }
+        ],
+        "payload": "",
+        "topic": "",
+        "x": 510,
+        "y": 220,
+        "wires": [
+            [
+                "8e2e9eb9.12823",
+                "dd67dac2.9a5278"
+            ]
+        ]
+    },
+    {
+        "id": "8e2e9eb9.12823",
+        "type": "change",
+        "z": "248157e0.dfc2c8",
+        "name": "Set Figure",
+        "rules": [
+            {
+                "t": "set",
+                "p": "figure",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "0",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 690,
+        "y": 220,
+        "wires": [
+            [
+                "556a5ca0.42da94"
+            ]
+        ]
+    },
+    {
+        "id": "e3e344fe.95d6f8",
+        "type": "function",
+        "z": "248157e0.dfc2c8",
+        "name": "Init Environment",
+        "func": "// Set defaults for choice \n//     {\"/\":\"/\"}\nvar figures = [\"0\",\"1\",\"2\",\"3\",\"4\",\"5\",\"6\",\"7\",\"8\",\"9\"];\n\n// store --> every event into array\nflow.set('store',false);\n\n// recorded --> the set is ready to save\nflow.set('recorded', false);\n\n// Array of recorded elements\nflow.set('motions',[]);\nflow.set('acceleration',[]);\nflow.set('qyroscope', []);\nflow.set('orientation', []);\nflow.set('compass',[]);\nflow.set('timestamp',[]);\nflow.set('userid',1);\nflow.set('figures', figures);\nflow.set('curfig',0);\n\n// Set Figure to default\nmsg.options = figures;\nmsg.payload = \"0\";\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 340,
+        "y": 220,
+        "wires": [
+            [
+                "2b61bfd9.33c3c",
+                "a752d96e.ab0558"
+            ]
+        ]
+    },
+    {
+        "id": "35201fb6.0e6db",
+        "type": "comment",
+        "z": "248157e0.dfc2c8",
+        "name": "Handle Motions",
+        "info": "",
+        "x": 100,
+        "y": 620,
+        "wires": []
+    },
+    {
+        "id": "5f1fc209.1220dc",
+        "type": "comment",
+        "z": "248157e0.dfc2c8",
+        "name": "Detect figure",
+        "info": "",
+        "x": 90,
+        "y": 860,
+        "wires": []
+    },
+    {
+        "id": "4fefd82d.ad9c98",
+        "type": "link in",
+        "z": "248157e0.dfc2c8",
+        "name": "Show recorded Elements",
+        "links": [
+            "563b0532.32479c",
+            "556a5ca0.42da94",
+            "6cb7d6de.e1d738"
+        ],
+        "x": 75,
+        "y": 520,
+        "wires": [
+            [
+                "ea56be4a.28637"
+            ]
+        ]
+    },
+    {
+        "id": "563b0532.32479c",
+        "type": "link out",
+        "z": "248157e0.dfc2c8",
+        "name": "Jump show",
+        "links": [
+            "4fefd82d.ad9c98"
+        ],
+        "x": 675,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "556a5ca0.42da94",
+        "type": "link out",
+        "z": "248157e0.dfc2c8",
+        "name": "Jump show",
+        "links": [
+            "4fefd82d.ad9c98"
+        ],
+        "x": 795,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "ebea61b.9b725a",
+        "type": "change",
+        "z": "248157e0.dfc2c8",
+        "name": "Set length",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.length",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 820,
+        "y": 820,
+        "wires": [
+            [
+                "6cb7d6de.e1d738"
+            ]
+        ]
+    },
+    {
+        "id": "6cb7d6de.e1d738",
+        "type": "link out",
+        "z": "248157e0.dfc2c8",
+        "name": "Jump show",
+        "links": [
+            "4fefd82d.ad9c98"
+        ],
+        "x": 935,
+        "y": 820,
+        "wires": []
+    },
+    {
+        "id": "f3981737.4ba588",
+        "type": "function",
+        "z": "248157e0.dfc2c8",
+        "name": "Reset Arrays",
+        "func": "// reset arrays \nflow.set('motions',[]);\nflow.set('acceleration',[]);\nflow.set('qyroscope', []);\nflow.set('orientation', []);\nflow.set('compass',[]);\nflow.set('timestamp',[]);\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 470,
+        "y": 920,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "711935f0.c98b7c",
+        "type": "ui_numeric",
+        "z": "248157e0.dfc2c8",
+        "name": "",
+        "label": "UserId",
+        "group": "ec8e4586.a97fa8",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "topic": "",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "100",
+        "step": 1,
+        "x": 690,
+        "y": 160,
+        "wires": [
+            [
+                "2a0875ea.26c2ca"
+            ]
+        ]
+    },
+    {
+        "id": "a752d96e.ab0558",
+        "type": "function",
+        "z": "248157e0.dfc2c8",
+        "name": "Gen UserID",
+        "func": "msg.payload = Math.floor(Math.random() * Math.floor(100));\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 530,
+        "y": 160,
+        "wires": [
+            [
+                "711935f0.c98b7c"
+            ]
+        ]
+    },
+    {
+        "id": "2a0875ea.26c2ca",
+        "type": "change",
+        "z": "248157e0.dfc2c8",
+        "name": "Set userid",
+        "rules": [
+            {
+                "t": "set",
+                "p": "userid",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 840,
+        "y": 160,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "866c261b.c93428",
+        "type": "inject",
+        "z": "248157e0.dfc2c8",
+        "name": "Send On",
+        "topic": "",
+        "payload": "true",
+        "payloadType": "bool",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 120,
+        "y": 100,
+        "wires": [
+            [
+                "aa0903c8.27832"
+            ]
+        ]
+    },
+    {
+        "id": "8ed593e7.882c3",
+        "type": "change",
+        "z": "248157e0.dfc2c8",
+        "name": "Train",
+        "rules": [
+            {
+                "t": "set",
+                "p": "train",
+                "pt": "flow",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 530,
+        "y": 100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "dfb99056.8fd92",
+        "type": "inject",
+        "z": "248157e0.dfc2c8",
+        "name": "Send Off",
+        "topic": "",
+        "payload": "false",
+        "payloadType": "bool",
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "x": 120,
+        "y": 220,
+        "wires": [
+            [
+                "aa0903c8.27832",
+                "e3e344fe.95d6f8",
+                "69d44dd3.10b634"
+            ]
+        ]
+    },
+    {
+        "id": "aa0903c8.27832",
+        "type": "ui_switch",
+        "z": "248157e0.dfc2c8",
+        "name": "",
+        "label": "Detect / Train",
+        "group": "ec8e4586.a97fa8",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "decouple": "false",
+        "topic": "",
+        "style": "",
+        "onvalue": "true",
+        "onvalueType": "bool",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "false",
+        "offvalueType": "bool",
+        "officon": "",
+        "offcolor": "",
+        "x": 330,
+        "y": 100,
+        "wires": [
+            [
+                "8ed593e7.882c3"
+            ]
+        ]
+    },
+    {
+        "id": "9853456c.a3f978",
+        "type": "rpi-sensehat in",
+        "z": "248157e0.dfc2c8",
+        "name": "Joystick",
+        "motion": false,
+        "env": false,
+        "stick": true,
+        "x": 90,
+        "y": 360,
+        "wires": [
+            [
+                "e67a1dee.0e58c"
+            ]
+        ]
+    },
+    {
+        "id": "e67a1dee.0e58c",
+        "type": "function",
+        "z": "248157e0.dfc2c8",
+        "name": "start / stop",
+        "func": "// get store \nvar store = flow.get(\"store\");\n\n// get the values from the SenseHAT\nvar key = msg.payload.key;\nvar state = msg.payload.state;\n\n// ret messages\nvar msg1 = null;\nvar msg2 = null;\nvar msg3 = null;\n\nif (key === \"ENTER\" && state === 1) {\n    if (store === true) {\n        msg2 = { payload: false };\n        flow.set(\"store\", false);\n    } else {\n        msg3 = { payload: true };\n        flow.set(\"store\", true);\n        flow.set(\"motionset\", new Date());\n    }\n} else if (key === \"UP\" && state === 1) {\n    var figures = flow.get('figures');\n    var curfig = flow.get('curfig') + 1;\n    if (curfig === figures.length) {\n        curfig = 0;\n    }\n    flow.set('curfig', curfig);\n    msg1 = { payload: figures[curfig] };\n} else if (key === \"DOWN\" && state === 1) {\n    var figures = flow.get('figures');\n    var curfig = flow.get('curfig') - 1;\n    if (curfig < 0) {\n        curfig = figures.length-1;\n    }\n    flow.set('curfig', curfig);\n    msg1 = { payload: figures[curfig] };\n}\n\nreturn [msg1, msg2, msg3];",
+        "outputs": 3,
+        "noerr": 0,
+        "x": 250,
+        "y": 360,
+        "wires": [
+            [
+                "2b61bfd9.33c3c"
+            ],
+            [
+                "69d44dd3.10b634"
+            ],
+            [
+                "d8e20703.acd168"
+            ]
+        ]
+    },
+    {
+        "id": "a318a6d8.7dd848",
+        "type": "debug",
+        "z": "248157e0.dfc2c8",
+        "name": "IoT Sent Motions",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "x": 830,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "ea1269b3.bc1968",
+        "type": "switch",
+        "z": "248157e0.dfc2c8",
+        "name": "Send ?",
+        "property": "train",
+        "propertyType": "flow",
+        "rules": [
+            {
+                "t": "true"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 620,
+        "y": 600,
+        "wires": [
+            [
+                "a318a6d8.7dd848",
+                "864dbe57.17cad"
+            ]
+        ]
+    },
+    {
+        "id": "65058142.70e6",
+        "type": "rpi-sensehat out",
+        "z": "248157e0.dfc2c8",
+        "name": "",
+        "x": 1070,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "dd67dac2.9a5278",
+        "type": "function",
+        "z": "248157e0.dfc2c8",
+        "name": "HAT Msg",
+        "func": "var rotation = global.get(\"rotation\");\n\nif (rotation) {\n    msg.payload = rotation + \"\\n\" + msg.payload;\n}\n\nmsg.speed = 4;\n\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 676,
+        "y": 279.5,
+        "wires": [
+            [
+                "65058142.70e6"
+            ]
+        ]
+    },
+    {
+        "id": "b618007f.6d355",
+        "type": "switch",
+        "z": "248157e0.dfc2c8",
+        "name": "Detect ?",
+        "property": "train",
+        "propertyType": "flow",
+        "rules": [
+            {
+                "t": "false"
+            },
+            {
+                "t": "true"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 180,
+        "y": 920,
+        "wires": [
+            [
+                "f3981737.4ba588"
+            ],
+            [
+                "f3981737.4ba588",
+                "2778d69f.b9267a"
+            ]
+        ]
+    },
+    {
+        "id": "2778d69f.b9267a",
+        "type": "debug",
+        "z": "248157e0.dfc2c8",
+        "name": "Detect Motions",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "x": 400,
+        "y": 980,
+        "wires": []
+    },
+    {
+        "id": "864dbe57.17cad",
+        "type": "wiotp out",
+        "z": "248157e0.dfc2c8",
+        "authType": "d",
+        "qs": "false",
+        "qsDeviceId": "",
+        "deviceKey": "6a9c9fef.5851b",
+        "deviceType": "",
+        "deviceId": "",
+        "event": "motions",
+        "format": "json",
+        "qos": "",
+        "name": "Send to IBM IoTF",
+        "x": 830,
+        "y": 620,
+        "wires": []
+    },
+    {
+        "id": "d38d7911.e8c0e8",
+        "type": "function",
+        "z": "248157e0.dfc2c8",
+        "name": "Highlight figure",
+        "func": "var rotation = global.get(\"rotation\");\nvar figure = flow.get('figure') || '';\nvar train = (flow.get('train') === true);\nvar store = (flow.get('store') === true);\n\nif (rotation) {\n    msg.payload = rotation + \"\\n\" + figure\n}\n\nif (store) {\n    msg.color = (train ? 'red' : 'green') \n}\n\nmsg.speed = 4;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 820,
+        "y": 340,
+        "wires": [
+            [
+                "65058142.70e6"
+            ]
+        ]
+    },
+    {
+        "id": "ec8e4586.a97fa8",
+        "type": "ui_group",
+        "z": "",
+        "name": "Motion Training",
+        "tab": "e48ca45b.d9bca8",
+        "order": 3,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "6a9c9fef.5851b",
+        "type": "wiotp-credentials",
+        "z": "",
+        "name": "",
+        "org": "w5u1jo",
+        "serverName": "",
+        "devType": "TjBot-SenseHAT",
+        "devId": "TjBot-02",
+        "keepalive": "60",
+        "cleansession": true,
+        "tls": "",
+        "usetls": false
+    },
+    {
+        "id": "e48ca45b.d9bca8",
+        "type": "ui_tab",
+        "z": "",
+        "name": "Training Motions",
+        "icon": "dashboard",
+        "order": 3
+    }
+]
