@@ -1056,10 +1056,10 @@
         "voicehidden": "en-US_MichaelVoice",
         "format": "audio/wav",
         "password": "",
-        "apikey": "kAZvmknmqsmpoFTp3y3mN_GMC5Sb3PNY8JrSWM8AWvPo",
+        "apikey": "",
         "payload-response": false,
         "default-endpoint": false,
-        "service-endpoint": "https://stream-fra.watsonplatform.net/text-to-speech/api",
+        "service-endpoint": "",
         "x": 1200,
         "y": 1380,
         "wires": [
